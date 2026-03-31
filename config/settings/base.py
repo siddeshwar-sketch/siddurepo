@@ -5,6 +5,9 @@ Django base settings for All In One Donation System.
 from pathlib import Path
 import environ
 import os
+import pymysql
+
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR is now the project root, 3 directories up from base.py

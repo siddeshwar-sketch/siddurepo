@@ -61,8 +61,7 @@
                     <div class="d-flex align-items-center text-muted-custom">
                         <img src="https://ui-avatars.com/api/?name={{ campaign.owner.email }}&background=E5E7EB&color=374151"
                             alt="Organizer" class="rounded-circle me-2" width="40" height="40">
-                        <span class="me-3">Organized by <strong class="text-dark">{{
-                                campaign.owner.get_full_name|default:campaign.owner.username }}</strong></span>
+                        <span class="me-3">Organized by <strong class="text-dark">{{ campaign.owner.get_full_name|default:campaign.owner.username }}</strong></span>
                         <span class="me-3"><i class="fa-regular fa-clock me-1"></i> {{ campaign.created_at|timesince }}
                             ago</span>
                         {% if campaign.location %}
@@ -135,11 +134,6 @@
                     <p class="text-muted-custom small fw-semibold mb-1">
                         <i class="fa-solid fa-users text-primary me-1"></i> {{ campaign.donations.count }} Donors
                     </p>
-                    <div class="mb-4">
-                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-bold small"><i
-                                class="fa-solid fa-money-bill-transfer me-1"></i> Funds Issued: ₹{{
-                            campaign.amount_issued|default:0 }}</span>
-                    </div>
 
                     {% if campaign.status == 'ACTIVE' and campaign.approved %}
                     <button

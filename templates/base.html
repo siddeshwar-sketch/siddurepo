@@ -157,11 +157,162 @@
         </div>
     </footer>
 
+    <!-- ChatBot UI -->
+    <!-- ChatBot UI -->
+    <div id="chat-widget" class="position-fixed bottom-0 end-0 m-0 z-3 d-flex flex-column align-items-end" style="width: 400px; max-width: 90vw;">
+        <!-- Chat Bubble with Pulse Animation -->
+        <button id="chat-bubble" class="btn btn-primary-custom rounded-circle shadow-lg d-flex align-items-center justify-content-center pulse-btn m-4" style="width: 65px; height: 65px; border: 4px solid rgba(255,255,255,0.3);">
+            <i class="fa-solid fa-wand-magic-sparkles fs-3 text-white"></i>
+        </button>
+        
+        <!-- Chat Window (Refined Glassmorphism) -->
+        <div id="chat-window" class="card glass-panel border-0 shadow-lg d-none m-4" style="border-radius: 24px; overflow: hidden; height: 550px; display: flex; flex-direction: column; animation: slideScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+            <!-- Chat Header -->
+            <div class="card-header bg-primary-custom text-white py-3 px-4 d-flex justify-content-between align-items-center border-0 shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-3">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;">
+                            <i class="fa-solid fa-robot text-primary-custom fs-5"></i>
+                        </div>
+                        <span class="position-absolute bottom-0 end-0 bg-success border border-white border-2 rounded-circle" style="width: 12px; height: 12px;"></span>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Platform Assistant</h6>
+                        <span class="badge bg-white-50 text-white-50 p-0 fs-tiny" style="font-size: 10px; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-circle-check me-1"></i> VERIFIED ASSISTANT
+                        </span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white opacity-75 hover-scale" id="close-chat"></button>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="card-body p-4 bg-white-50" style="overflow-y: auto; flex-grow: 1; background: rgba(255,255,255,0.4);">
+                <div class="message assistant-message mb-3">
+                    <div class="d-inline-block bg-white p-3 rounded-4 shadow-sm small text-dark border-start border-primary border-4">
+                        Hello! 👋 I'm your **All-in-One Donation Assistant**. I'm here to provide perfect solutions for your giving or fundraising journey. How can I assist you today?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="card-footer bg-white p-3 border-0 shadow-sm-top">
+                <form id="chat-form" class="input-group">
+                    <input type="text" id="chat-input" class="form-control border-0 bg-light rounded-pill-start ps-4 py-2" placeholder="Ask me anything..." autocomplete="off">
+                    <button type="submit" class="btn btn-primary-custom rounded-pill-end px-4">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+>
+
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- Alpine JS for interactions -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- ChatBot JS Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatBubble = document.getElementById('chat-bubble');
+            const chatWindow = document.getElementById('chat-window');
+            const closeChat = document.getElementById('close-chat');
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+            const chatMessages = document.getElementById('chat-messages');
+
+            // Toggle Chat Window
+            chatBubble.addEventListener('click', () => {
+                chatWindow.classList.toggle('d-none');
+                chatBubble.classList.toggle('d-none');
+            });
+
+            closeChat.addEventListener('click', () => {
+                chatWindow.classList.add('d-none');
+                chatBubble.classList.remove('d-none');
+            });
+
+            // Handle Messages
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = chatInput.value.trim();
+                if (!text) return;
+
+                // Add User Message
+                addMessage(text, 'user');
+                chatInput.value = '';
+
+                // Add Loading Indicator
+                const loadingId = 'loading-' + Date.now();
+                addLoading(loadingId);
+
+                try {
+                    const response = await fetch('/api/chat/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ message: text })
+                    });
+                    
+                    const data = await response.json();
+                    document.getElementById(loadingId).remove();
+                    addMessage(data.response, 'assistant');
+                } catch (error) {
+                    console.error('Chat Error:', error);
+                    document.getElementById(loadingId).innerHTML = '<div class="alert alert-danger mb-0 small">Error sending message.</div>';
+                }
+            });
+
+            function addMessage(text, role) {
+                const div = document.createElement('div');
+                div.className = `message ${role}-message mb-3 d-flex ${role === 'user' ? 'justify-content-end' : ''}`;
+                
+                const bubble = document.createElement('div');
+                if (role === 'assistant') {
+                    bubble.className = "d-inline-block p-3 rounded-4 shadow-sm small bg-white text-dark border-start border-primary border-4 pulse-in";
+                    bubble.style.maxWidth = '90%';
+                } else {
+                    bubble.className = "d-inline-block p-3 rounded-4 shadow-sm small bg-primary-custom text-white border-0 slide-in-right";
+                    bubble.style.maxWidth = '85%';
+                }
+                
+                bubble.innerHTML = text;
+                
+                div.appendChild(bubble);
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function addLoading(id) {
+                const div = document.createElement('div');
+                div.id = id;
+                div.className = 'message assistant-message mb-3';
+                div.innerHTML = '<div class="d-inline-block bg-light p-3 rounded-4 shadow-sm small"><div class="spinner-border spinner-border-sm text-primary" role="status"></div> Thinking...</div>';
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        });
+    </script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -179,5 +330,53 @@
     </script>
     
     {% block scripts %}{% endblock %}
+    <style>
+        .transition-hover:hover {
+            transform: translateY(-10px);
+            transition: transform 0.3s ease;
+        }
+
+        /* ChatBot Animations */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.33); }
+            80%, 100% { opacity: 0; }
+        }
+        @keyframes pulse-dot {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1); }
+            100% { transform: scale(0.8); }
+        }
+        .pulse-btn {
+            position: relative;
+            animation: pulse-dot 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) -0.4s infinite;
+        }
+        .pulse-btn::before {
+            content: '';
+            position: absolute;
+            display: block;
+            width: 300%;
+            height: 300%;
+            box-sizing: border-box;
+            margin-left: -100%;
+            margin-top: -100%;
+            border-radius: 50%;
+            background-color: var(--primary);
+            animation: pulse-ring 2.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            z-index: -1;
+        }
+        @keyframes slideScale {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes pulse-in {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pulse-in { animation: pulse-in 0.3s ease-out forwards; }
+        .slide-in-right { animation: slideScale 0.3s ease-out forwards; }
+        .hover-scale:hover { transform: scale(1.1); transition: transform 0.2s; }
+        .fs-tiny { font-size: 10px; }
+        .shadow-sm-top { box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05); }
+    </style>
 </body>
 </html>

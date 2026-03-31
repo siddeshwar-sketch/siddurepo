@@ -10,12 +10,17 @@ from accounts.views import RegisterView, UserProfileView
 from campaigns.views import CampaignViewSet, CategoryViewSet
 from donations.views import DonationViewSet
 
+from .views import ChatBotView
+
 router = DefaultRouter()
 router.register(r'campaigns', CampaignViewSet)
 router.register(r'categories', CategoryViewSet)
 router.register(r'donations', DonationViewSet, basename='donation')
 
 urlpatterns = [
+    # ChatBot
+    path('chat/', ChatBotView.as_view(), name='api_chat'),
+
     # Auth JWT
     path('auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
