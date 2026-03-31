@@ -2,7 +2,10 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['yourdomain.com'])
+ALLOWED_HOSTS = env.list(
+    'ALLOWED_HOSTS',
+    default=['siddurepo.onrender.com', 'localhost', '127.0.0.1']
+)
 
 # Secure cookies
 SESSION_COOKIE_SECURE = True
