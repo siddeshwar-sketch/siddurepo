@@ -13,7 +13,10 @@ SECURE_HSTS_PRELOAD = True
 
 # Production database (Postgres)
 DATABASES = {
-    'default': env.db('DATABASE_URL')
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 # For static files in production, use Whitenoise or Nginx.
