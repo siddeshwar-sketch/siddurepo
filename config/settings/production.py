@@ -13,15 +13,18 @@ SECURE_HSTS_PRELOAD = True
 
 # Production database (Postgres)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db('DATABASE_URL')
 }
 
 # For static files in production, use Whitenoise or Nginx.
 # We'll rely on Nginx in docker-compose.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Use Whitenoise for efficient static file serving
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # Any production email configurations
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

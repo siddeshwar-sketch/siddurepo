@@ -16,3 +16,4 @@ cryptography>=44.0.0
 razorpay
 mysqlclient>=2.2.4
 pymysql>=1.1.0
+whitenoise>=6.6.0
