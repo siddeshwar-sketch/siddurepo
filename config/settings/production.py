@@ -11,9 +11,10 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Production database (Postgres)
+# Production database (Postgres/MySQL)
+# Fallback to SQLite during build if DATABASE_URL is missing
 DATABASES = {
-    'default': env.db('DATABASE_URL')
+    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
 }
 
 # For static files in production, use Whitenoise or Nginx.
