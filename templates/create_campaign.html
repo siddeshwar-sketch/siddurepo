@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Start a Campaign | All-in-One Donation Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card glass-panel border-0 shadow-lg mt-4 mb-5">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-parachute-box fs-1 text-primary mb-3"></i>
+                        <h2 class="fw-bold mb-1">Start a Fundraising Campaign</h2>
+                        <p class="text-muted-custom">Provide details and verification documents to start your impact.</p>
+                    </div>
+
+                    <form id="createCampaignForm" method="POST" action="{% url 'create_campaign' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                        {% endif %}
+                        
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">1. Campaign Details</h5>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Title</label>
+                            <input type="text" class="form-control bg-light border-0 py-2" name="title" required value="{{ form.title.value|default:'' }}">
+                            {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Story / Description</label>
+                            <textarea class="form-control bg-light border-0" name="description" rows="5" required>{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Category</label>
+                                <select name="category" class="form-select bg-light border-0 py-2" required>
+                                    <option value="">Select Category</option>
+                                    {% for value, label in form.category.field.choices %}
+                                        {% if value %}
+                                            <option value="{{ value }}" {% if form.category.value == value|stringformat:"s" %}selected{% endif %}>{{ label }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Target Goal (₹)</label>
+                                <input type="number" min="1" step="0.01" inputmode="decimal" class="form-control bg-light border rounded-3 py-2" name="goal_amount" placeholder="Enter target goal" required value="{{ form.goal_amount.value|default:'' }}">
+                                {% if form.goal_amount.errors %}<div class="text-danger small">{{ form.goal_amount.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Location</label>
+                                <input type="text" class="form-control bg-light border rounded-3 py-2" name="location" placeholder="Enter location" value="{{ form.location.value|default:'' }}">
+                                {% if form.location.errors %}<div class="text-danger small">{{ form.location.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Campaign Image Main Header</label>
+                            <input class="form-control bg-light border-0" type="file" name="image" accept="image/*">
+                        </div>
+
+                        <h5 class="fw-bold mb-3 mt-4 border-bottom pb-2">2. Verification Proofs</h5>
+                        <p class="small text-muted-custom">To establish trust, provide a medical estimate, ID proof, or other documentation. Internal use and donor verification only.</p>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Document Type</label>
+                                <select class="form-select bg-light border-0" name="proof-document_type">
+                                    <option value="IDENTITY" {% if proof_form.document_type.value == 'IDENTITY' %}selected{% endif %}>Identity Proof (ID/Passport)</option>
+                                    <option value="MEDICAL" {% if proof_form.document_type.value == 'MEDICAL' %}selected{% endif %}>Medical Document / Estimate</option>
+                                    <option value="FINANCIAL" {% if proof_form.document_type.value == 'FINANCIAL' %}selected{% endif %}>Financial Need Proof</option>
+                                    <option value="OTHER" {% if proof_form.document_type.value == 'OTHER' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Proof Document</label>
+                                <input class="form-control bg-light border-0" type="file" name="proof-document">
+                                {% if proof_form.document.errors %}<div class="text-danger small">{{ proof_form.document.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Proof Brief description</label>
+                            <input type="text" class="form-control bg-light border-0" name="proof-description" placeholder="e.g. Hospital Invoice Estimation" value="{{ proof_form.description.value|default:'' }}">
+                        </div>
+
+                        <hr class="my-4 border-light">
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 rounded-pill fs-5 fw-bold shadow-lg">Start Campaign</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

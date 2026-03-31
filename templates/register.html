@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Sign Up | All-in-One Donation Platform{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card glass-panel border-0 shadow-lg my-5">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-users fs-1 text-primary mb-3"></i>
+                        <h2 class="fw-bold mb-1">Create an account</h2>
+                        <p class="text-muted-custom">Join the community and start making an impact.</p>
+                    </div>
+
+                    <form id="registerForm" method="POST" action="{% url 'register' %}">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label fw-bold">First Name</label>
+                                <input type="text" class="form-control form-control-lg bg-light border-0" id="firstName" name="first_name" required value="{{ form.first_name.value|default:'' }}">
+                                {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label fw-bold">Last Name</label>
+                                <input type="text" class="form-control form-control-lg bg-light border-0" id="lastName" name="last_name" required value="{{ form.last_name.value|default:'' }}">
+                                {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-bold">Email address</label>
+                            <input type="email" class="form-control form-control-lg bg-light border-0" id="email" name="email" required value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_phone_number" class="form-label fw-bold">Mobile Number</label>
+                            <input type="text" class="form-control form-control-lg bg-light border-0" id="id_phone_number" name="phone_number" required value="{{ form.phone_number.value|default:'' }}" placeholder="Enter mobile number">
+                            {% if form.phone_number.errors %}<div class="text-danger small">{{ form.phone_number.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="id_password1" class="form-label fw-bold">Password</label>
+                                <input type="password" class="form-control form-control-lg bg-light border-0" id="id_password1" name="password1" required>
+                                {% if form.password1.errors %}<div class="text-danger small">{{ form.password1.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="id_password2" class="form-label fw-bold">Confirm Password</label>
+                                <input type="password" class="form-control form-control-lg bg-light border-0" id="id_password2" name="password2" required>
+                                {% if form.password2.errors %}<div class="text-danger small">{{ form.password2.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" value="" id="termsCheck" required>
+                            <label class="form-check-label text-muted-custom small" for="termsCheck">
+                                By creating an account, you agree to our Terms of Service and Privacy Policy.
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-4 rounded-pill">Create Account</button>
+                        <div class="position-relative mb-4">
+                            <hr class="text-muted-custom">
+                            <span class="position-absolute top-50 start-50 translate-middle bg-white px-2 text-muted-custom small fw-bold">OR</span>
+                        </div>
+                        
+                        <a href="{% provider_login_url 'google' %}" class="btn btn-outline-dark w-100 py-3 rounded-pill fw-bold mb-3 d-flex align-items-center justify-content-center text-decoration-none">
+                            <i class="fa-brands fa-google me-2 text-danger"></i> Continue with Google
+                        </a>
+                    </form>
+
+                    <p class="text-center mt-4 mb-0 text-muted-custom">
+                        Already have an account? <a href="/login" class="text-primary fw-bold text-decoration-none">Log in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

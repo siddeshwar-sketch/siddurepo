@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Explore Categories | All-in-One Donation Platform{% endblock %}
+
+{% block content %}
+<!-- Categories Hero -->
+<section class="py-5 bg-light border-bottom shadow-sm overflow-hidden position-relative">
+    <div class="hero-shape shape-1"></div>
+    <div class="hero-shape shape-2"></div>
+    <div class="container py-4 position-relative">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Explore Categories</li>
+            </ol>
+        </nav>
+        <h1 class="display-4 fw-bold mb-2">Empower <span class="text-primary-custom">Every Cause</span></h1>
+        <p class="lead text-muted-custom mb-0">Choose a category to find campaigns making an impact in fields that matter to you.</p>
+    </div>
+</section>
+
+<!-- Categories Grid -->
+<section class="py-5">
+    <div class="container my-5">
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-hover transition-all">
+                    <div class="position-relative" style="height: 180px;">
+                        {% if category.icon %}
+                        <img src="{{ category.icon.url }}" class="card-img-top h-100 object-fit-cover" alt="{{ category.name }}">
+                        {% else %}
+                        <div class="h-100 bg-secondary-subtle d-flex align-items-center justify-content-center">
+                            <i class="fa-solid fa-layer-group text-muted opacity-50 fs-1"></i>
+                        </div>
+                        {% endif %}
+                        <div class="position-absolute bottom-0 start-0 w-100 p-3 bg-gradient-dark">
+                            <h5 class="fw-bold mb-0 text-white">{{ category.name }}</h5>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <p class="text-muted-custom small mb-4 flex-grow-1">
+                            Browse active campaigns in {{ category.name }} and help support those in need.
+                        </p>
+                        <a href="{% url 'category_detail' category.slug %}" class="btn btn-outline-primary w-100 rounded-pill fw-bold stretched-link">
+                            Explore <i class="fa-solid fa-arrow-right ms-1 small"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="bg-light rounded-circle shadow-sm d-inline-flex justify-content-center align-items-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fa-solid fa-folder-open fs-2 text-muted-custom"></i>
+                </div>
+                <h4 class="fw-bold">No Categories Found</h4>
+                <p class="text-muted-custom">Categories are currently being configured. Please check back soon.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary-custom rounded-pill fw-bold shadow-sm px-4 mt-2">Back to Home</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-dark text-white text-center rounded-4 mx-3 my-5 shadow-lg overflow-hidden position-relative">
+    <div class="hero-shape shape-1 opacity-25"></div>
+    <div class="container position-relative">
+        <h2 class="fw-bold mb-3">Have a cause of your own?</h2>
+        <p class="lead mb-4 opacity-75">Start your own campaign today and join our community of change-makers.</p>
+        <a href="{% url 'create_campaign' %}" class="btn btn-primary-custom btn-lg px-5 rounded-pill fw-bold shadow-sm">Start a Campaign</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,930 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ campaign.title }} | All-in-One Donation Platform{% endblock %}
+
+{% block content %}
+<div id="campaignData" data-campaign-id="{{ campaign.id }}" style="display: none;"></div>
+<div class="row pt-5 bg-white border-bottom shadow-sm">
+    <div class="container pb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="col-12 mb-4">
+                    {% if campaign.status == 'PENDING' or campaign.status == 'DRAFT' %}
+                    <div
+                        class="alert alert-warning border-0 shadow-sm rounded-4 d-flex align-items-center mb-4 p-3 anim-fade-in">
+                        <i class="fa-solid fa-clock-rotate-left fs-4 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0">Under Review</h6>
+                            <p class="small mb-0 opacity-75">Our team is currently verifying the details of this
+                                campaign. Donations will be enabled once verified.</p>
+                        </div>
+                    </div>
+                    {% elif campaign.status == 'ACTIVE' and campaign.approved %}
+                    <div
+                        class="alert alert-success border-0 shadow-sm rounded-4 d-flex align-items-center mb-4 p-3 anim-fade-in">
+                        <i class="fa-solid fa-circle-check fs-4 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0">Verified & Live</h6>
+                            <p class="small mb-0 opacity-75">This campaign has been fully verified and is currently
+                                accepting donations.</p>
+                        </div>
+                    </div>
+                    {% elif campaign.status == 'REJECTED' %}
+                    <div
+                        class="alert alert-danger border-0 shadow-sm rounded-4 d-flex align-items-center mb-4 p-3 anim-fade-in">
+                        <i class="fa-solid fa-circle-xmark fs-4 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0">Campaign Rejected</h6>
+                            <p class="small mb-0 opacity-75">This campaign was not approved for public fundraising.</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if user == campaign.owner and campaign.status == 'REJECTED' and campaign.status_reason %}
+                    <div
+                        class="alert alert-info border-0 shadow-sm rounded-4 d-flex align-items-center mb-4 p-3 anim-fade-in">
+                        <i class="fa-solid fa-comment-dots fs-4 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0">Rejection Reason</h6>
+                            <p class="small mb-0 opacity-75">{{ campaign.status_reason }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <span class="badge bg-secondary mb-2 rounded-pill px-3">{{ campaign.category.name }}</span>
+                    {% if campaign.proofs.exists %}
+                    <span class="badge bg-success mb-2 rounded-pill px-3 ms-2"><i class="fa-solid fa-shield-check"></i>
+                        Has Verification Proofs</span>
+                    {% endif %}
+                    <h1 class="fw-bolder display-5 mb-3">{{ campaign.title }}</h1>
+                    <div class="d-flex align-items-center text-muted-custom">
+                        <img src="https://ui-avatars.com/api/?name={{ campaign.owner.email }}&background=E5E7EB&color=374151"
+                            alt="Organizer" class="rounded-circle me-2" width="40" height="40">
+                        <span class="me-3">Organized by <strong class="text-dark">{{
+                                campaign.owner.get_full_name|default:campaign.owner.username }}</strong></span>
+                        <span class="me-3"><i class="fa-regular fa-clock me-1"></i> {{ campaign.created_at|timesince }}
+                            ago</span>
+                        {% if campaign.location %}
+                        <span><i class="fa-solid fa-location-dot me-1"></i> {{ campaign.location }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <!-- Example Image Carousel -->
+                <div class="rounded-4 overflow-hidden shadow-lg position-relative" style="height: 400px;">
+                    <img src="https://images.unsplash.com/photo-1538356111053-748a48e1acb8?q=80&w=1200"
+                        alt="Campaign Banner" class="w-100 h-100 object-fit-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <ul class="nav nav-tabs fw-semibold mb-4" id="campaignTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active text-dark" id="story-tab" data-bs-toggle="tab"
+                        data-bs-target="#story" type="button" role="tab" aria-selected="true">Story</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-dark" id="updates-tab" data-bs-toggle="tab" data-bs-target="#updates"
+                        type="button" role="tab" aria-selected="false">Updates</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="campaignTabsContent">
+                <div class="tab-pane fade show active" id="story" role="tabpanel" tabindex="0">
+                    <div class="content text-muted-custom fs-5 lh-lg">
+                        <p>Hi everyone,</p>
+                        <p>It breaks our heart to share that our beloved colleague and friend, John, has been diagnosed
+                            with Leukemia. For the last 15 years, he has dedicated his life to teaching underprivileged
+                            children in our community.</p>
+                        <p>John's treatment will take approximately 8 months. During this time, he will be unable to
+                            work. We are aiming to raise ₹50,00,000 to cover his living expenses and the mounting
+                            medical bills not covered by his insurance plan.</p>
+                        <p><strong>Any amount you can donate—whether it's ₹500 or ₹5000—makes a huge
+                                difference.</strong> If you cannot donate, please share this campaign with your network.
+                        </p>
+                        <p>Thank you for your kindness!</p>
+                    </div>
+                </div>
+                <!-- Add updates tab content -->
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Donation Sidebar Widget -->
+            <div class="card glass-panel border-0 mb-4 sticky-top" style="top: 100px;">
+                <div class="card-body p-4 text-center">
+                    <h3 class="fw-bold text-dark mb-1">₹{{ campaign.raised_amount }} <span
+                            class="text-muted-custom fs-6 fw-normal">raised of ₹{{ campaign.goal_amount }} goal</span>
+                    </h3>
+                    <div class="progress-custom mb-3 mt-3">
+                        <div class="progress-bar-custom" role="progressbar"
+                            data-progress="{{ campaign.progress_percentage }}" style="width: 0%;"
+                            aria-valuenow="{{ campaign.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+
+
+
+                    <p class="text-muted-custom small fw-semibold mb-1">
+                        <i class="fa-solid fa-users text-primary me-1"></i> {{ campaign.donations.count }} Donors
+                    </p>
+                    <div class="mb-4">
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-bold small"><i
+                                class="fa-solid fa-money-bill-transfer me-1"></i> Funds Issued: ₹{{
+                            campaign.amount_issued|default:0 }}</span>
+                    </div>
+
+                    {% if campaign.status == 'ACTIVE' and campaign.approved %}
+                    <button
+                        class="btn btn-primary-custom w-100 py-3 rounded-pill fw-bold text-uppercase letter-spacing mb-3 shadow"
+                        data-bs-toggle="modal" data-bs-target="#donationModal">
+                        Donate via Razorpay
+                    </button>
+                    {% else %}
+                    <div class="alert alert-light border border-dashed rounded-4 py-3 mb-3">
+                        <p class="small fw-semibold text-muted mb-0">
+                            <i class="fa-solid fa-lock me-2"></i> Donations are currently disabled for this campaign.
+                        </p>
+                    </div>
+                    {% endif %}
+                    <button
+                        class="btn btn-outline-dark w-100 py-3 rounded-pill fw-bold d-flex align-items-center justify-content-center">
+                        <i class="fa-solid fa-share-nodes me-2"></i> Share Campaign
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Donation Checkout Modal -->
+<div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-5 pt-3 pb-5 text-center">
+                <div class="mb-4">
+                    <h3 class="fw-bold">Secure Donation</h3>
+                    <p class="text-muted-custom small">You are supporting "{{ campaign.title }}"</p>
+                </div>
+
+                <form id="donationForm">
+                    {% csrf_token %}
+                    <!-- Amount selection -->
+                    <div class="d-flex justify-content-between gap-2 mb-4">
+                        <input type="radio" class="btn-check" name="amount" id="btn-500" autocomplete="off" value="500">
+                        <label class="btn btn-outline-primary fw-bold w-100 py-2 border-2 rounded-3"
+                            for="btn-500">₹500</label>
+
+                        <input type="radio" class="btn-check" name="amount" id="btn-1000" autocomplete="off"
+                            value="1000" checked>
+                        <label class="btn btn-outline-primary fw-bold w-100 py-2 border-2 rounded-3"
+                            for="btn-1000">₹1000</label>
+
+                        <input type="radio" class="btn-check" name="amount" id="btn-2500" autocomplete="off"
+                            value="2500">
+                        <label class="btn btn-outline-primary fw-bold w-100 py-2 border-2 rounded-3"
+                            for="btn-2500">₹2500</label>
+
+                        <input type="radio" class="btn-check" name="amount" id="btn-5000" autocomplete="off"
+                            value="5000">
+                        <label class="btn btn-outline-primary fw-bold w-100 py-2 border-2 rounded-3"
+                            for="btn-5000">₹5000</label>
+                    </div>
+
+                    <!-- Custom Amount -->
+                    <div class="input-group mb-4">
+                        <span class="input-group-text bg-white border-end-0 fw-bold border-2 text-muted-custom"><i
+                                class="fa-solid fa-indian-rupee-sign"></i></span>
+                        <input type="number" class="form-control border-start-0 border-2 py-2 fw-bold" id="customAmount"
+                            placeholder="Custom Amount">
+                    </div>
+
+                    <div class="text-start mb-4">
+                        <h6 class="fw-bold text-dark mb-3">Your Details</h6>
+                        <div class="mb-3">
+                            <label class="small text-muted-custom mb-1">Full Name</label>
+                            <input type="text" class="form-control border-2 py-2" id="donorName"
+                                placeholder="Enter your full name"
+                                value="{{ user.get_full_name|default:user.username }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted-custom mb-1">Email Address</label>
+                            <input type="email" class="form-control border-2 py-2" id="donorEmail"
+                                placeholder="Enter your email" value="{{ user.email }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="small text-muted-custom mb-1">Message to Organizer (Optional)</label>
+                            <textarea class="form-control border-2 py-2" id="donorMessage" rows="2"
+                                placeholder="Write a supportive message..."></textarea>
+                        </div>
+                        <div class="form-check form-switch mt-3">
+                            <input class="form-check-input" type="checkbox" role="switch" id="isAnonymous">
+                            <label class="form-check-label small fw-semibold text-muted-custom" for="isAnonymous">
+                                Donate Anonymously
+                            </label>
+                            <p class="x-small text-muted mb-0" style="font-size: 11px;">Your name won't be displayed
+                                publicly, but the organizer will still see it for records.</p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 border-light">
+
+                    <button type="button" id="submitDonation"
+                        class="btn btn-primary-custom w-100 py-3 fw-bold rounded-pill shadow d-flex justify-content-center align-items-center">
+                        <i class="fa-solid fa-lock me-2"></i> Continue to Payment
+                    </button>
+                    <p class="text-muted-custom small mt-3"><i
+                            class="fa-solid fa-credit-card fs-4 text-secondary me-2"></i> Guaranteed safe and secure
+                        checkout using Razorpay.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const donationForm = document.getElementById('donationForm');
+
+        // OTP Input Auto-focus
+        const otpInputs = document.querySelectorAll('.otp-input');
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Progress bar animation
+        document.querySelectorAll('.progress-bar-custom').forEach(bar => {
+            const progress = bar.getAttribute('data-progress');
+            setTimeout(() => { bar.style.width = progress + '%'; }, 100);
+        });
+
+        const submitBtn = document.getElementById('submitDonation');
+        const customAmountInput = document.getElementById('customAmount');
+        const presetRadios = document.querySelectorAll('input[name="amount"]');
+
+        // Sync radio buttons with custom input
+        if (customAmountInput) {
+            presetRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.checked) {
+                        customAmountInput.value = this.value;
+                    }
+                });
+            });
+
+            // Set initial value to match the pre-checked radio (e.g. 1000)
+            const initialChecked = document.querySelector('input[name="amount"]:checked');
+            if (initialChecked && !customAmountInput.value) {
+                customAmountInput.value = initialChecked.value;
+            }
+
+            // Sync back: if user types an amount that matches a radio, check it; otherwise uncheck all
+            customAmountInput.addEventListener('input', function () {
+                const val = this.value;
+                presetRadios.forEach(radio => {
+                    radio.checked = (radio.value === val);
+                });
+            });
+        }
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', async function () {
+                // Get amount and other details
+                let amount = customAmountInput.value;
+                const donorName = document.getElementById('donorName').value.trim();
+                const donorEmail = document.getElementById('donorEmail').value.trim();
+                const donorMessage = document.getElementById('donorMessage').value.trim();
+                const isAnonymous = document.getElementById('isAnonymous').checked;
+
+                if (!amount || amount <= 0) {
+                    alert('Please select or enter a valid donation amount.');
+                    return;
+                }
+
+                if (!donorName) {
+                    alert('Please enter your full name for the donation record.');
+                    return;
+                }
+
+                if (!donorEmail || !donorEmail.includes('@')) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+
+                const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+                if (!csrfTokenElement) {
+                    alert('CSRF token not found. Please refresh the page.');
+                    return;
+                }
+                const csrfToken = csrfTokenElement.value;
+
+                try {
+                    // Disable button and show loading state
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Processing...';
+                    submitBtn.disabled = true;
+
+                    // 1. Create Donation Record
+                    const donationResponse = await fetch('/api/donations/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({
+                            amount: amount,
+                            campaign: document.getElementById('campaignData').dataset.campaignId,
+                            donor_name: donorName,
+                            donor_email: donorEmail,
+                            message: donorMessage,
+                            is_anonymous: isAnonymous
+                        })
+                    });
+
+                    if (!donationResponse.ok) {
+                        const errorData = await donationResponse.json();
+                        throw new Error(errorData.detail || 'Failed to create donation record.');
+                    }
+
+                    const donationData = await donationResponse.json();
+
+                    // 2. Create Razorpay Order
+                    const orderResponse = await fetch('/api/payments/create-order/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({
+                            donation_id: donationData.id
+                        })
+                    });
+
+                    if (!orderResponse.ok) {
+                        const errorData = await orderResponse.json();
+                        throw new Error(errorData.error || 'Failed to initialize payment.');
+                    }
+
+                    const orderData = await orderResponse.json();
+                    window.currentOrderData = orderData; // Store for simulation steps
+
+                    // --- AUTOMATIC FALLBACK TO MULTI-STEP SIMULATION ---
+                    if (orderData.is_mock) {
+                        const mockOverlay = document.getElementById('mockGateway');
+                        const displayAmount = document.getElementById('mockDisplayAmount');
+                        const successAmount = document.getElementById('mockSuccessAmount');
+
+                        const stepConnecting = document.getElementById('mockConnecting');
+                        const stepChoose = document.getElementById('mockChooseMethod');
+
+                        // 1. Show Mock Gateway & Set Amounts
+                        const formattedAmount = (orderData.amount / 100).toLocaleString();
+                        displayAmount.innerText = formattedAmount;
+                        successAmount.innerText = formattedAmount;
+
+                        // Update amounts in all sub-steps
+                        document.querySelectorAll('.mock-amount-span').forEach(span => {
+                            span.innerText = formattedAmount;
+                        });
+
+                        // Generate Live QR Code for UPI
+                        if (typeof generateMockQR === 'function') {
+                            generateMockQR(orderData.amount / 100);
+                        }
+
+                        mockOverlay.style.display = 'flex';
+
+                        // 2. Initial "Connecting" state
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+
+                        // 3. Transition to "Choose Method"
+                        stepConnecting.style.display = 'none';
+                        stepChoose.style.display = 'block';
+
+                        return; // Wait for user to click a method
+                    }
+
+                    // 3. Open Razorpay Checkout
+                    const options = {
+                        "key": orderData.key_id,
+                        "amount": orderData.amount,
+                        "currency": orderData.currency,
+                        "name": "All-in-One Donation Platform",
+                        "description": "Donation to " + "{{ campaign.title }}",
+                        "order_id": orderData.order_id,
+                        "handler": async function (response) {
+                            // Verify Payment on Backend
+                            try {
+                                const verifyResponse = await fetch('/api/payments/verify-payment/', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRFToken': csrfToken
+                                    },
+                                    body: JSON.stringify({
+                                        razorpay_order_id: response.razorpay_order_id,
+                                        razorpay_payment_id: response.razorpay_payment_id,
+                                        razorpay_signature: response.razorpay_signature
+                                    })
+                                });
+
+                                if (verifyResponse.ok) {
+                                    window.location.href = window.location.pathname + '?success=true';
+                                } else {
+                                    const errorData = await verifyResponse.json();
+                                    alert('Payment verification failed: ' + (errorData.error || 'Unknown error'));
+                                }
+                            } catch (err) {
+                                alert('Error during verification: ' + err.message);
+                            }
+                        },
+                        "prefill": {
+                            "name": "{{ user.get_full_name|default:'' }}",
+                            "email": "{{ user.email|default:'' }}",
+                        },
+                        "theme": {
+                            "color": "#0d6efd"
+                        },
+                        "modal": {
+                            "ondismiss": function () {
+                                submitBtn.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Continue to Payment';
+                                submitBtn.disabled = false;
+                            }
+                        }
+                    };
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                    // Reset button
+                    submitBtn.innerHTML = '<i class="fa-solid fa-lock me-2"></i> Continue to Payment';
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+    });
+
+    // Global functions for simulated payment steps (accessed by onclick)
+    window.showMockStep = function (step) {
+        const steps = ['mockConnecting', 'mockChooseMethod', 'mockStepCards', 'mockStepUPI', 'mockStepNetbanking', 'mockStepWallet', 'mockStepOTP', 'mockVerifying', 'mockFinalSuccess'];
+        steps.forEach(s => {
+            const el = document.getElementById(s);
+            if (el) el.style.display = 'none';
+        });
+
+        const targetMap = {
+            'connecting': 'mockConnecting',
+            'choose': 'mockChooseMethod',
+            'cards': 'mockStepCards',
+            'upi': 'mockStepUPI',
+            'netbanking': 'mockStepNetbanking',
+            'wallet': 'mockStepWallet',
+            'otp': 'mockStepOTP',
+            'verifying': 'mockVerifying',
+            'success': 'mockFinalSuccess'
+        };
+
+        const targetId = targetMap[step];
+        if (targetId) {
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) targetEl.style.display = 'block';
+        }
+    };
+
+    window.finalizeMockPayment = async function () {
+        showMockStep('verifying');
+
+        const mockOverlay = document.getElementById('mockGateway');
+
+        // 1. Wait for simulation effect (mimic bank latency)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // 2. Verify on backend using the stored order data
+        try {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const verifyResponse = await fetch('/api/payments/verify-payment/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    razorpay_order_id: window.currentOrderData.order_id
+                })
+            });
+
+            if (verifyResponse.ok) {
+                // 3. Generate Receipt Data
+                const now = new Date();
+                const txId = 'TXN_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                const dateStr = now.toLocaleString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+
+                document.getElementById('receiptTxID').innerText = txId;
+                document.getElementById('receiptDate').innerText = dateStr;
+
+                // 4. Show Success Animation
+                showMockStep('success');
+
+                // REMOVED: Auto-redirect disabled to show the static receipt
+                // await new Promise(resolve => setTimeout(resolve, 4000));
+                // window.location.href = window.location.pathname + '?success=true';
+            } else {
+                mockOverlay.style.display = 'none';
+                alert('Simulation failed on backend.');
+            }
+        } catch (err) {
+            mockOverlay.style.display = 'none';
+            alert('Error during simulation: ' + err.message);
+        }
+    };
+
+    // Scripts for Receipt Actions (CDN)
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    document.head.appendChild(script);
+
+    // Manual Navigation & Receipt Actions
+    window.manualRedirect = function () {
+        window.location.href = window.location.pathname + '?success=true';
+    };
+
+    window.manualReceiptAction = async function (type) {
+        const btn = event.currentTarget || event.target.closest('button');
+        const originalHtml = btn.innerHTML;
+        const txId = document.getElementById('receiptTxID').innerText;
+        const amount = document.getElementById('mockSuccessAmount').innerText;
+        const campaignTitle = "{{ campaign.title }}";
+
+        if (type === 'share') {
+            const shareData = {
+                title: 'Donation Successful!',
+                text: `I just donated ₹${amount} to support "${campaignTitle}" on All-in-One Donation Platform! Join me:`,
+                url: window.location.href.split('?')[0]
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) { console.log('Share error'); }
+            } else {
+                navigator.clipboard.writeText(shareData.url).then(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-check me-2 text-success"></i>Link Copied!';
+                    setTimeout(() => btn.innerHTML = originalHtml, 2000);
+                });
+            }
+        } else if (type === 'download') {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2 text-primary"></i>Generating PDF...';
+
+            const element = document.querySelector('.receipt-card');
+            const opt = {
+                margin: 0.5,
+                filename: `Receipt_${txId}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3, useCORS: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = '<i class="fa-solid fa-check me-2 text-success"></i>Downloaded!';
+                setTimeout(() => btn.innerHTML = originalHtml, 2000);
+            }).catch(err => {
+                btn.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-2 text-danger"></i>Error';
+                setTimeout(() => btn.innerHTML = originalHtml, 2000);
+            });
+        }
+    };
+
+    // Global function for generating a real-time QR code
+    window.generateMockQR = function (amount, vpa = null) {
+        const qrPlaceholder = document.getElementById('mockQRPlaceholder');
+        const qrImg = document.getElementById('mockQRImage');
+        if (qrImg && qrPlaceholder) {
+            const uId = vpa || (document.getElementById('mockUPIInput') ? document.getElementById('mockUPIInput').value : 'donations@okaxis');
+            const amt = amount || (window.currentOrderData ? window.currentOrderData.amount / 100 : 0);
+
+            const upiUrl = `upi://pay?pa=${uId}&pn=AllInOnePlatform&am=${amt}&cu=INR`;
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=10&data=${encodeURIComponent(upiUrl)}`;
+
+            // Show image, hide placeholder
+            qrImg.src = qrApiUrl;
+            qrImg.style.display = 'block';
+            qrPlaceholder.style.display = 'none';
+        }
+    };
+</script>
+
+<!-- Data for JS -->
+<div id="campaignData" data-campaign-id="{{ campaign.id }}" style="display: none;"></div>
+
+<!-- Simulated Gateway Overlay -->
+<div id="mockGateway" class="mock-gateway-overlay">
+    <div class="mock-gateway-card shadow-lg glass-panel p-0 overflow-hidden">
+        <!-- Dashboard Header -->
+        <div class="bg-primary-custom text-white p-3 d-flex align-items-center justify-content-between">
+            <div class="small fw-bold"><i class="fa-solid fa-hand-holding-heart me-2"></i>All-in-One Donation Platform
+            </div>
+            <div class="small opacity-75">Pay ₹<span id="mockDisplayAmount">0</span></div>
+        </div>
+
+        <div class="p-4 pt-4">
+            <!-- Step 1: Connecting -->
+            <div id="mockConnecting">
+                <div class="loading-spinner-custom mb-3"></div>
+                <h5 class="fw-bold text-dark">Starting Secure Gateway...</h5>
+                <p class="text-muted-custom small">Establishing encrypted connection to Razorpay</p>
+            </div>
+
+            <!-- Step 2: Choose Payment Method -->
+            <div id="mockChooseMethod" style="display: none;">
+                <h6 class="text-start fw-bold text-uppercase small text-muted-custom mb-3">Choose Payment Method</h6>
+
+                <div class="d-grid gap-2">
+                    <button type="button"
+                        class="btn btn-outline-dark text-start p-3 rounded-3 border-light-subtle d-flex align-items-center justify-content-between mock-method-btn"
+                        onclick="showMockStep('cards')">
+                        <div><i class="fa-solid fa-credit-card text-primary-custom me-3 w-10"></i> Cards <small
+                                class="text-muted d-block ps-4 ms-2">Visa, Mastercard, RuPay, Maestro</small></div>
+                        <i class="fa-solid fa-chevron-right small opacity-50"></i>
+                    </button>
+
+                    <button type="button"
+                        class="btn btn-outline-dark text-start p-3 rounded-3 border-light-subtle d-flex align-items-center justify-content-between mock-method-btn"
+                        onclick="showMockStep('upi')">
+                        <div><i class="fa-solid fa-mobile-screen text-success me-3 w-10"></i> UPI <small
+                                class="text-muted d-block ps-4 ms-2">PhonePe, Google Pay, BHIM, and more</small></div>
+                        <i class="fa-solid fa-chevron-right small opacity-50"></i>
+                    </button>
+
+                    <button type="button"
+                        class="btn btn-outline-dark text-start p-3 rounded-3 border-light-subtle d-flex align-items-center justify-content-between mock-method-btn"
+                        onclick="showMockStep('netbanking')">
+                        <div><i class="fa-solid fa-building-columns text-warning me-3 w-10"></i> Netbanking <small
+                                class="text-muted d-block ps-4 ms-2">All Indian Banks</small></div>
+                        <i class="fa-solid fa-chevron-right small opacity-50"></i>
+                    </button>
+
+                    <button type="button"
+                        class="btn btn-outline-dark text-start p-3 rounded-3 border-light-subtle d-flex align-items-center justify-content-between mock-method-btn"
+                        onclick="showMockStep('wallet')">
+                        <div><i class="fa-solid fa-wallet text-info me-3 w-10"></i> Wallet <small
+                                class="text-muted d-block ps-4 ms-2">Mobikwik, Freecharge, etc.</small></div>
+                        <i class="fa-solid fa-chevron-right small opacity-50"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2.1: Cards Detail -->
+            <div id="mockStepCards" style="display: none;">
+                <div class="d-flex align-items-center mb-4">
+                    <button type="button" class="btn btn-link link-dark p-0 me-3" onclick="showMockStep('choose')"><i
+                            class="fa-solid fa-arrow-left"></i></button>
+                    <h6 class="fw-bold m-0 text-dark">Card Details</h6>
+                </div>
+                <div class="text-start mb-4">
+                    <div class="mb-3">
+                        <label class="small text-muted-custom mb-1">Card Number</label>
+                        <input type="text" class="form-control border-light-subtle bg-light py-2"
+                            placeholder="0000 0000 0000 0000" value="4111 1111 1111 1111">
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="small text-muted-custom mb-1">Expiry</label>
+                            <input type="text" class="form-control border-light-subtle bg-light py-2"
+                                placeholder="MM/YY" value="12/28">
+                        </div>
+                        <div class="col-6">
+                            <label class="small text-muted-custom mb-1">CVV</label>
+                            <input type="password" class="form-control border-light-subtle bg-light py-2"
+                                placeholder="123" value="123">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary-custom w-100 py-3 fw-bold rounded-3 shadow-sm"
+                    onclick="showMockStep('otp')">
+                    Pay ₹<span class="mock-amount-span">0</span>
+                </button>
+            </div>
+
+            <!-- Step 2.2: UPI Detail -->
+            <div id="mockStepUPI" style="display: none;">
+                <div class="d-flex align-items-center mb-4">
+                    <button type="button" class="btn btn-link link-dark p-0 me-3" onclick="showMockStep('choose')"><i
+                            class="fa-solid fa-arrow-left"></i></button>
+                    <h6 class="fw-bold m-0 text-dark">UPI Payment</h6>
+                </div>
+                <div class="mb-4">
+                    <div class="bg-white p-2 rounded-4 mb-3 d-flex flex-column align-items-center justify-content-center border border-2 border-light-subtle shadow-sm mx-auto"
+                        style="width: 180px; height: 180px;">
+                        <div id="mockQRPlaceholder" class="opacity-25 py-4">
+                            <i class="fa-solid fa-qrcode fs-1 mb-1"></i>
+                            <p class="small m-0">Generating QR...</p>
+                        </div>
+                        <img id="mockQRImage" src="" alt="UPI QR Code"
+                            style="display: none; width: 160px; height: 160px;" class="rounded-3">
+                    </div>
+                    <div class="text-start">
+                        <label class="small text-muted-custom mb-1">Or Enter UPI ID</label>
+                        <input type="text" id="mockUPIInput" class="form-control border-light-subtle bg-light py-2"
+                            placeholder="username@upi" value="donations@okaxis"
+                            oninput="generateMockQR(null, this.value)">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary-custom w-100 py-3 fw-bold rounded-3 shadow-sm"
+                    onclick="showMockStep('otp')">
+                    Pay ₹<span class="mock-amount-span">0</span>
+                </button>
+            </div>
+
+            <!-- Step 2.3: Netbanking Detail -->
+            <div id="mockStepNetbanking" style="display: none;">
+                <div class="d-flex align-items-center mb-4">
+                    <button type="button" class="btn btn-link link-dark p-0 me-3" onclick="showMockStep('choose')"><i
+                            class="fa-solid fa-arrow-left"></i></button>
+                    <h6 class="fw-bold m-0 text-dark">Select Bank</h6>
+                </div>
+                <div class="row g-2 mb-4 text-start">
+                    <div class="col-6">
+                        <button
+                            class="btn btn-outline-light text-dark w-100 border border-light-subtle small py-2 d-flex align-items-center"
+                            onclick="showMockStep('otp')">
+                            <i class="fa-solid fa-building-columns text-primary me-2"></i> SBI
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button
+                            class="btn btn-outline-light text-dark w-100 border border-light-subtle small py-2 d-flex align-items-center"
+                            onclick="showMockStep('otp')">
+                            <i class="fa-solid fa-building-columns text-danger me-2"></i> HDFC
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button
+                            class="btn btn-outline-light text-dark w-100 border border-light-subtle small py-2 d-flex align-items-center"
+                            onclick="showMockStep('otp')">
+                            <i class="fa-solid fa-building-columns text-warning me-2"></i> ICICI
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button
+                            class="btn btn-outline-light text-dark w-100 border border-light-subtle small py-2 d-flex align-items-center"
+                            onclick="showMockStep('otp')">
+                            <i class="fa-solid fa-building-columns text-success me-2"></i> AXIS
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <select class="form-select border-light-subtle bg-light small py-2">
+                        <option selected>Other Banks</option>
+                        <option>Bank of Baroda</option>
+                        <option>Kotak Mahindra</option>
+                        <option>PNB</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Step 2.4: Wallet -->
+            <div id="mockStepWallet" style="display: none;">
+                <div class="d-flex align-items-center mb-4">
+                    <button type="button" class="btn btn-link link-dark p-0 me-3" onclick="showMockStep('choose')"><i
+                            class="fa-solid fa-arrow-left"></i></button>
+                    <h6 class="fw-bold m-0 text-dark">Wallets</h6>
+                </div>
+                <div class="d-grid gap-2 mb-4">
+                    <button class="btn btn-outline-light text-dark text-start border border-light-subtle p-3 rounded-3"
+                        onclick="showMockStep('otp')">
+                        <i class="fa-solid fa-wallet text-primary me-2"></i> Amazon Pay
+                    </button>
+                    <button class="btn btn-outline-light text-dark text-start border border-light-subtle p-3 rounded-3"
+                        onclick="showMockStep('otp')">
+                        <i class="fa-solid fa-wallet text-danger me-2"></i> Mobikwik
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2.5: OTP Verification (NEW) -->
+            <div id="mockStepOTP" style="display: none;">
+                <div class="d-flex align-items-center mb-4">
+                    <button type="button" class="btn btn-link link-dark p-0 me-3" onclick="showMockStep('choose')"><i
+                            class="fa-solid fa-arrow-left"></i></button>
+                    <h6 class="fw-bold m-0 text-dark">Verify Security Code</h6>
+                </div>
+                <div class="mb-4">
+                    <p class="small text-muted-custom mb-3">Enter the 6-digit OTP sent to your simulator mobile</p>
+                    <div class="d-flex justify-content-center gap-2 mb-4">
+                        <input type="text" class="form-control text-center fw-bold fs-4 border-2 otp-input"
+                            style="width: 40px;" maxlength="1">
+                        <input type="text" class="form-control text-center fw-bold fs-4 border-2 otp-input"
+                            style="width: 40px;" maxlength="1">
+                        <input type="text" class="form-control text-center fw-bold fs-4 border-2 otp-input"
+                            style="width: 40px;" maxlength="1">
+                        <input type="text" class="form-control text-center fw-bold fs-4 border-2 otp-input"
+                            style="width: 40px;" maxlength="1">
+                        <input type="text" class="form-control text-center fw-bold fs-4 border-2 otp-input"
+                            style="width: 40px;" maxlength="1">
+                        <input type="text" class="form-control text-center fw-bold fs-4 border-2 otp-input"
+                            style="width: 40px;" maxlength="1">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary-custom w-100 py-3 fw-bold rounded-3 shadow-sm"
+                    onclick="finalizeMockPayment()">
+                    Confirm & Pay ₹<span class="mock-amount-span">0</span>
+                </button>
+            </div>
+
+            <!-- Step 3: Verifying -->
+            <div id="mockVerifying" style="display: none;">
+                <div class="loading-spinner-custom mb-3" style="border-top-color: #10b981;"></div>
+                <h5 class="fw-bold text-dark">Processing Payment...</h5>
+                <p class="text-muted-custom small">Verifying your transaction with your bank</p>
+            </div>
+
+            <!-- Step 4: Success (RECEIPT) -->
+            <div id="mockFinalSuccess" style="display: none;">
+                <div class="success-icon-wrapper mb-3">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h5 class="fw-bold text-dark green-status">Transaction Successful!</h5>
+                <p class="text-muted-custom small mb-4">Your payment of ₹<span id="mockSuccessAmount">0</span> has been
+                    verified.</p>
+
+                <div
+                    class="receipt-card mb-4 text-start small border-0 bg-light-subtle rounded-4 p-3 border border-light-subtle">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Transaction ID:</span>
+                        <span class="fw-bold text-primary-custom" id="receiptTxID">TXN_872391029</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Date & Time:</span>
+                        <span id="receiptDate">Oct 24, 2026, 09:25 PM</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Payment Type:</span>
+                        <span class="fw-bold">Donation</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Status:</span>
+                        <span class="text-success fw-bold"><i class="fa-solid fa-circle-check me-1"></i> Success</span>
+                    </div>
+                </div>
+
+                <!-- Receipt Actions -->
+                <div class="d-flex gap-2 mb-4">
+                    <button type="button"
+                        class="btn btn-outline-light text-dark flex-grow-1 py-2 small fw-bold border-light-subtle shadow-sm"
+                        onclick="manualReceiptAction('share')">
+                        <i class="fa-solid fa-share-nodes me-2 text-primary"></i>Share
+                    </button>
+                    <button type="button"
+                        class="btn btn-outline-light text-dark flex-grow-1 py-2 small fw-bold border-light-subtle shadow-sm"
+                        onclick="manualReceiptAction('download')">
+                        <i class="fa-solid fa-download me-2 text-primary"></i>Download
+                    </button>
+                </div>
+
+                <button type="button" class="btn btn-primary-custom w-100 py-3 fw-bold rounded-pill shadow-sm"
+                    onclick="manualRedirect()">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Back to Campaign
+                </button>
+                <p class="small text-muted-custom opacity-50 mt-3"><i class="fa-solid fa-lock me-1"></i> Official
+                    Receipt Generated</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-light p-2 border-top text-center">
+            <span class="small text-muted opacity-50 fw-bold letter-spacing-1"><i
+                    class="fa-solid fa-shield-halved me-1"></i> SECURED BY RAZORPAY MOCK</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

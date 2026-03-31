@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} Campaigns | All-in-One Donation Platform{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container my-5">
+        <div class="d-flex align-items-center mb-4 border-bottom pb-4">
+            {% if category.icon %}
+            <img src="{{ category.icon.url }}" alt="{{ category.name }}" style="width: 64px; height: 64px; object-fit: contain;" class="me-4 drop-shadow">
+            {% else %}
+            <i class="fa-solid fa-list text-primary display-4 me-4"></i>
+            {% endif %}
+            <div>
+                <h5 class="text-secondary fw-bold text-uppercase mb-1">Explore Category</h5>
+                <h1 class="fw-bolder display-5 mb-0 d-flex align-items-center">{{ category.name }}</h1>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {% if campaigns %}
+                {% for campaign in campaigns %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card campaign-card h-100 border-0 shadow-sm hover-lift">
+                        <div class="position-absolute top-0 end-0 m-3 z-3">
+                            <span class="badge bg-success shadow-sm px-3 py-2 rounded-pill"><i class="fa-solid fa-check-circle me-1"></i> Admin Verified</span>
+                        </div>
+                        {% if campaign.image %}
+                        <img src="{{ campaign.image.url }}" class="card-img-top campaign-image" alt="{{ campaign.title }}" style="height: 220px; object-fit: cover;">
+                        {% else %}
+                        <img src="{% static 'images/campaign_placeholder.png' %}" class="card-img-top campaign-image" alt="{{ campaign.title }}" style="height: 220px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body p-4 d-flex flex-column">
+                            <h4 class="card-title fw-bold mb-3"><a href="{% url 'campaign_detail' campaign.pk %}" class="text-decoration-none text-dark stretched-link">{{ campaign.title }}</a></h4>
+                            <p class="card-text text-muted-custom small mb-4 flex-grow-1">{{ campaign.description|truncatechars:120 }}</p>
+                            
+                            {% with pct=campaign.progress_percentage|floatformat:0 %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between fw-bold small mb-2">
+                                    <span class="text-secondary">₹{{ campaign.raised_amount|floatformat:0 }} raised</span>
+                                    <span class="{% if campaign.progress_percentage >= 70 %}text-success{% elif campaign.progress_percentage >= 30 %}text-warning{% else %}text-danger{% endif %} fw-bold">{{ pct }}%</span>
+                                </div>
+                                <div class="progress rounded-pill" style="height: 10px; background-color: #e9ecef;">
+                                    <div class="progress-bar rounded-pill {% if campaign.progress_percentage >= 70 %}bg-success{% elif campaign.progress_percentage >= 30 %}bg-warning{% else %}bg-danger{% endif %}"
+                                         role="progressbar"
+                                         style="width: {{ pct }}%; transition: width 0.8s ease;"
+                                         aria-valuenow="{{ pct }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <div class="text-muted-custom small mt-2 fw-semibold">of ₹{{ campaign.goal_amount|floatformat:0 }} goal</div>
+                            </div>
+                            {% endwith %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="p-5 bg-white rounded-4 shadow-sm text-center">
+                        <i class="fa-solid fa-folder-open text-muted opacity-25 display-1 mb-4"></i>
+                        <h3 class="fw-bold mb-3">No campaigns found</h3>
+                        <p class="text-muted-custom lead mb-4">There are currently no active, admin-verified seekers for the <strong>{{ category.name }}</strong> category.</p>
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary rounded-pill px-4 py-2 fw-bold">Return to Explore</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

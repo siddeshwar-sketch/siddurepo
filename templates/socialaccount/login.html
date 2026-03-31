@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Sign In" %} | EduNet NextGen{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card glass-panel border-0 shadow-lg mt-5">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fa-brands fa-google fs-1 text-danger"></i>
+                        </div>
+                        <h2 class="fw-bold mb-1">{% trans "Sign In Via Google" %}</h2>
+                        <p class="text-muted-custom small">
+                            {% blocktrans with provider.name as provider_name %}You are about to sign in using a third-party account from {{ provider_name }}.{% endblocktrans %}
+                        </p>
+                    </div>
+
+                    <form method="post" action="{% url 'google_login' %}">
+                        {% csrf_token %}
+                        <div class="bg-light p-4 rounded-4 mb-4 text-center">
+                            <p class="mb-0 text-muted-custom small">
+                                {% trans "Confirming your login with Google will securely link your social profile to your EduNet account." %}
+                            </p>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center">
+                            <i class="fa-brands fa-google me-2"></i> {% trans "Continue with Google" %}
+                        </button>
+                        
+                        <div class="text-center">
+                            <a href="{% url 'account_login' %}" class="text-muted-custom text-decoration-none small">
+                                {% trans "Cancel and go back" %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
