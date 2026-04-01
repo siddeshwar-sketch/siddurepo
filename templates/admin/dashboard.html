@@ -348,6 +348,12 @@
                             <td class="px-4 py-3">
                                 <div class="fw-semibold text-dark">{{ campaign.title }}</div>
                                 <div class="text-muted small text-truncate" style="max-width: 200px;">{{ campaign.description|truncatechars:60 }}</div>
+                                <div class="mt-2 p-2 bg-light rounded-3 border small">
+                                    <div class="x-small text-uppercase fw-bold text-muted mb-1"><i class="fa-solid fa-building-columns me-1"></i> Bank Record</div>
+                                    <strong>Bank:</strong> {{ campaign.bank_name|default:"<span class='text-danger'>Missing</span>" }}<br>
+                                    <strong>A/C:</strong> {{ campaign.bank_account_number|default:"<span class='text-danger'>Missing</span>" }}<br>
+                                    <strong>IFSC:</strong> {{ campaign.ifsc_code|default:"<span class='text-danger'>Missing</span>" }}
+                                </div>
                             </td>
                             <td class="px-4 py-3">
                                 <div class="small fw-semibold">{{ campaign.owner.get_full_name|default:campaign.owner.username }}</div>

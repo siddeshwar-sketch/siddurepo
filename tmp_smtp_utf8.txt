@@ -1,0 +1,6 @@
+﻿FAILED: sharanprakaspatil70558@gmail.com / eket qxdq hnbt kuyv -> (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-2b2427c176fsm134749295ad.77 - gsmtp')
+SUCCESS: sharanprakashpatil70558@gmail.com / eket qxdq hnbt kuyv
+--------------------
+FAILED: sharanprakaspatil70558@gmail.com / eketqxdqhnbtkuyv -> (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-82ca85fc6e9sm13850936b3a.46 - gsmtp')
+SUCCESS: sharanprakashpatil70558@gmail.com / eketqxdqhnbtkuyv
+--------------------

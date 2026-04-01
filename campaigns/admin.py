@@ -32,7 +32,7 @@ class CampaignAdmin(admin.ModelAdmin):
             'fields': ('status', 'approved', 'status_reason')
         }),
         ('Funding Summary', {
-            'fields': ('raised_amount', 'amount_issued', 'payment_qr_code')
+            'fields': ('raised_amount', 'amount_issued', 'payment_qr_code', 'bank_name', 'bank_account_number', 'ifsc_code')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at')

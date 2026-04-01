@@ -36,6 +36,11 @@ class Campaign(models.Model):
     
     payment_qr_code = models.ImageField(upload_to='campaigns/qr_codes/', null=True, blank=True, help_text="Upload your UPI or Bank QR code here")
     
+    # Seeker Bank Details
+    bank_name = models.CharField(max_length=100, blank=True, null=True, help_text="Name of the Seeker's bank")
+    bank_account_number = models.CharField(max_length=50, blank=True, null=True, help_text="Seeker's Bank Account Number")
+    ifsc_code = models.CharField(max_length=20, blank=True, null=True, help_text="IFSC Code for the bank branch")
+
     status = models.CharField(
         max_length=20,
         choices=Status.choices,

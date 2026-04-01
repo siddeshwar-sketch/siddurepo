@@ -62,9 +62,30 @@
                         <div class="mb-4">
                             <label class="form-label fw-bold">Campaign Image Main Header</label>
                             <input class="form-control bg-light border-0" type="file" name="image" accept="image/*">
+                            {% if form.image.errors %}<div class="text-danger small">{{ form.image.errors }}</div>{% endif %}
                         </div>
 
-                        <h5 class="fw-bold mb-3 mt-4 border-bottom pb-2">2. Verification Proofs</h5>
+                        <h5 class="fw-bold mb-3 mt-4 border-bottom pb-2">2. Bank Account Details</h5>
+                        <p class="small text-muted-custom">Please provide the bank details where the collected funds should be transferred.</p>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Bank Name</label>
+                                <input type="text" class="form-control bg-light border-0 py-2" name="bank_name" placeholder="e.g. State Bank of India" required value="{{ form.bank_name.value|default:'' }}">
+                                {% if form.bank_name.errors %}<div class="text-danger small">{{ form.bank_name.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">Account Number</label>
+                                <input type="text" class="form-control bg-light border-0 py-2" name="bank_account_number" placeholder="Account Number" required value="{{ form.bank_account_number.value|default:'' }}">
+                                {% if form.bank_account_number.errors %}<div class="text-danger small">{{ form.bank_account_number.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">IFSC Code</label>
+                                <input type="text" class="form-control bg-light border-0 py-2" name="ifsc_code" placeholder="IFSC Code" required value="{{ form.ifsc_code.value|default:'' }}">
+                                {% if form.ifsc_code.errors %}<div class="text-danger small">{{ form.ifsc_code.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold mb-3 mt-4 border-bottom pb-2">3. Verification Proofs</h5>
                         <p class="small text-muted-custom">To establish trust, provide a medical estimate, ID proof, or other documentation. Internal use and donor verification only.</p>
                         <div class="row">
                             <div class="col-md-6 mb-3">

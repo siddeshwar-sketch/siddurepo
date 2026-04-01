@@ -340,7 +340,7 @@ class ForgotPasswordRequestView(FormView):
     success_url = reverse_lazy('password_reset_verify')
 
     def form_valid(self, form):
-        email = form.cleaned_data['email']
+        email = form.cleaned_data['email'].lower().strip()
         try:
             user = User.objects.get(email=email)
             
@@ -360,13 +360,15 @@ class ForgotPasswordRequestView(FormView):
                 # Use fail_silently=False to catch errors
                 send_mail(subject, message, from_email, recipient_list, fail_silently=False)
                 messages.success(self.request, f"OTP sent to your email ({email}).")
+                
+                # This MUST be set for the verification step to identify the user
+                self.request.session['reset_email'] = email
+                return super().form_valid(form)
             except Exception as e:
                 print(f"ERROR: Email delivery failed. Check .env credentials: {e}")
-                messages.error(self.request, f"Email delivery failed! Please check your SMTP settings in .env.")
-            
-            # This MUST be set for the verification step to identify the user
-            self.request.session['reset_email'] = email
-            return super().form_valid(form)
+                messages.error(self.request, f"FAILED to send email: {str(e)[:100]}. Please check your SMTP settings in .env.")
+                return self.form_invalid(form)
+                
         except User.DoesNotExist:
             form.add_error('email', "No user found with this email address.")
             return self.form_invalid(form)
